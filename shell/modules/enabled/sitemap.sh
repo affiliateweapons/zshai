@@ -1,0 +1,1 @@
+../available/sitemap.sh

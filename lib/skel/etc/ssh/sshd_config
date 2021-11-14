@@ -1,0 +1,9 @@
+Port 689
+ChallengeResponseAuthentication no
+UsePAM yes
+PrintMotd no
+X11Forwarding yes
+AcceptEnv LANG LC_*
+Subsystem sftp	/usr/lib/openssh/sftp-server
+PasswordAuthentication no
+PermitRootLogin yes

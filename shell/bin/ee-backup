@@ -1,0 +1,41 @@
+#!/usr/bin/env zsh
+
+ee="/opt/easyengine/sites"
+backup="/home/backup"
+
+site=$1
+[[ ! -d $ee/$1 ]] && echo "site does not exist: $1" && return
+
+
+## BACKUP SITE
+prefix=$1"_"
+curdate=$(date '+%Y-%m-%d')
+
+sitedir=$ee/$1/app/htdocs/
+mkdir -p $backup/logs
+cmd="tar czvf $prefix$curdate.wp.tar.gz $sitedir >> $prefix$curdate.log"
+echo "$timestamp - compressing site: $cmd"
+eval $cmd
+
+mv *.gz $backup
+mv $prefix*.log $backup/logs
+
+## BACKUP DB
+sites=$('ls' $ee)
+year=`date +%Y`
+month=`date +%m`
+day=`date +%d`
+date=`date +%Y-%m-%d`
+
+mkdir -p $backup/db
+i=$site
+    name=$i"_$date"
+    sql="$ee/$i/app/htdocs/$i.sql"
+    echo "backup site: $i"
+    ee shell $i --command="wp db export $i.sql"
+    cmd="tar czvf $backup/db/$name.db.tar.gz $sql 2>/dev/null"
+    echo "$timestamp - compress db: $cmd"
+    eval $cmd
+    rm $ee/$i/app/htdocs/$i.sql
+
+ls --recursive $backup

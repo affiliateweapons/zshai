@@ -1,0 +1,1 @@
+../available/servers.sh

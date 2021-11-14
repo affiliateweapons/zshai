@@ -1,0 +1,1 @@
+alias repo="cd ~/repo"
