@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
-
+ZSHAI=~/zshai
+ZSHAI_DATA=~/.zshai
 # this the entry file that will be sourced by .zshrc
-eval $(cat ~/zshai/.zshai.env)
+eval $(cat $ZSHAI/.zshai.env)
 export ZSHAI_LOADED_COMPLETIONS=()
 # load core aliases and functions
 'source' $ZSHAI/core.sh
