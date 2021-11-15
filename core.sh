@@ -10,8 +10,8 @@ alias ehf="sudo nano /etc/hosts"
 alias edh="sudo nano /etc/hosts"
 alias shc="sudo nano /etc/ssh/ssh_config.d/empire.conf"
 
-# edit and source core 
-alias ea="nano $ZSHAI/aliases/core.sh;source $ZSHAI/aliases/core.sh"
+# edit and source core aliases and functions
+alias ea="nano $ZSHAI/core.sh;source $ZSHAI/core.sh"
 
 # edit and source zshrc
 alias ezc="nano ~/.zshrc;source ~/.zshrc"
@@ -21,16 +21,6 @@ alias gr="grep --color=auto"
 alias fgr="fgrep --color=auto"
 alias egr="egrep --color=auto"
 
-# ls
-alias lsh="'ls' --help"
-alias l="'ls' -1"
-alias l="ls"
-alias lsn="'ls' -1"
-alias ls="'ls' -lsAtrhp --color=auto --group-directories-first"
-alias lsr="'ls' --recursive"
-alias lls="l -p --color=auto"
-alias ll="ls"
-alias cl="clear"
 
 # rm
 alias srm="sudo rm -R"
@@ -141,3 +131,15 @@ alias ep="nano ~/.zshai/creds/.passwords"
 # exit
 alias x="exit"
 
+
+
+# ls
+alias lsh="'ls' --help"
+alias l="'ls' -1"
+alias l="ls"
+alias lsn="'ls' -1"
+alias ls="'ls' -lsAtrhp --color=auto --group-directories-first"
+alias lsr="'ls' --recursive"
+alias lls="l -p --color=auto"
+alias ll="ls"
+alias cl="clear"
