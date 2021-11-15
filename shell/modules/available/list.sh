@@ -22,12 +22,8 @@ list() {
     nano ~/.zshai/list/$1
   }
 
-
-
   local action="${1:-all}"
-
   echo "action: $action"
-
 
   case $1 in
   modules)

@@ -10,7 +10,6 @@ local font="$1"
   }
 }
 
-
 #@todo cache results
 fzfiglet() {
   local default_text="Powered by Zsh.Ai"
