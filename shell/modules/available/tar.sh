@@ -31,5 +31,21 @@ tarx() {
   tar zxvf $1
 }
 
+targit() {
+  if [[ "$1" == '*https*' ]]; then
+     METHOD="https"
+  else
+     METHOD="ssh"
+  fi
+  echo "Method: $METHOD"
+
+  local name=${1:l:t:r}
+  echo "Cloning to $name"
+  git clone $1 $name
+  echo "Creating archive $name.tar.gz"
+  tardm $name
+  tarl $name.tar.gz | fzf_preview
+}
+
 # list files in a .tar.gz archive
 alias tarl="tar -tvf"
