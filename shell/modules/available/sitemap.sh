@@ -20,6 +20,7 @@ cachegen() {
 
 build_cache() {
   local cachedir=$PWD/cache
+  mkdir -p $cachedir
   for i in $(cat cache.index); do
     md5=$(echo $i | md5);
     wget $i -O $cachedir/$md5

@@ -1,6 +1,11 @@
 # move unused files
 unused() {
-  local folder=~/unused
+  [[ -d "$1" ]] && {
+    local folder="unused"
+    shift
+  } || {
+    local folder=~/unused
+  }
   # create folder to dump unused files
   [[ ! -d "$folder" ]] && mkdir "$folder"
   [[ -e "$1" ]] && {

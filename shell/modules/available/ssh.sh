@@ -169,3 +169,21 @@ vared -p  "Deploy profile $select to $server ? y/n "  -e answer
 } && echo "Aborting"
 
 }
+
+
+ssh_keygen() {
+
+[[ -z $1 ]] && echo "No profile name given" && return
+
+
+local profile=~/.ssh/profiles/$1
+[[ -e $profile ]] && {
+  echo "profile $1 is taken" && return  
+} || {
+
+  mkdir -p $profile
+}
+
+ssh-keygen -f $profile/id_rsa
+
+}

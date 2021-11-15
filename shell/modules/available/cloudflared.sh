@@ -2,3 +2,4 @@
 cloudflared() {
   docker run --rm -it cloudflared $@
 }
+zshai_alias cf="cloudflared"
