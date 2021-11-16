@@ -26,3 +26,8 @@ gac() {
   sudo git add .
   sudo git commit -m $msg
 }
+
+
+gitrepos() {
+find *  | grep .git$  2>/dev/null
+}
