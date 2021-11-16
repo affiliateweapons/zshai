@@ -37,7 +37,7 @@ function td() {
 # capture the aliases for later use when you want to disable certain aliases
 zshai_alias() {
   alias "$1"
-  [[ -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] && echo "Setting alias: $1" >>  zshai_log aliases
+  [[ ! -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] && echo "Setting alias: $1" >>  zshai_log aliases
 }
 
 zshai_log() {
