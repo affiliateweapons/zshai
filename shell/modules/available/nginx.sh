@@ -9,10 +9,9 @@ addnginx() {
   local webroot="/usr/share/nginx"
   local config="/etc/nginx/conf.d"
   local skel="$ZSHAI/lib/skel/nginx/server.conf"
-  
-  cp ./server.conf /etc/nginx/conf.d/$domain.conf \
-  && mkdir $webroot/$domain \
-  && cat $skel | sed 's/{DOMAIN}/$domain/g' > $config \
+  local domainconfig="/etc/nginx/conf.d/$domain.conf"
+  mkdir $webroot/$domain \
+  && cat $skel | sed 's/{DOMAIN}/$domain/g' > $domainconfig \
   && sudo service nginx restart \
   && cd /usr/share/nginx/$domain
   

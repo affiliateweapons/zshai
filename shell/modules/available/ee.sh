@@ -19,3 +19,12 @@ ee_backup() {
   done
 
 }
+
+ee_sites() {
+'ls' /opt/easyengine/sites
+}
+
+eelogs() {
+    find /var/lib/docker/volumes/*_log_*/_data -type f | \
+    fzf --preview="tac {}" --preview-window=top,70%
+}

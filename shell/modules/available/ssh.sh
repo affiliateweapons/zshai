@@ -58,6 +58,9 @@ msx() {
 teleport_empire() {
   scp /etc/ssh/ssh_config.d/empire.conf $1:/etc/ssh/ssh_config.d/empire.conf
 }
+teleport_aliases() {
+  scp $ZSHAI_DATA/aliases.sh $1:/root/.zshai/aliases.sh
+}
 alias te="teleport_empire"
 
 

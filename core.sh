@@ -41,15 +41,18 @@ zshai_alias() {
 }
 
 zshai_log() {
-  local type=$1
-  message=$(cat /dev/stdinput)
-  [[ !-z $type ]] {
+  local type="$1"
+  local message=$(cat /dev/stdinput)
+  [[ ! -z "$type" ]] && {
     logfile="$ZSHAI_DATA/log/$type"
-    [[ ! -e $logfile ]] && touch $logfile
-    echo $message >> $ZSHAI_DATA/log/$type
+    [[ ! -e $logfile ]] && { 
+      touch $logfile
+      echo $message >> $ZSHAI_DATA/log/$type
+    }
   }
 
 }
+
 # helper function validating required parameters
 req1() {
   [[ -z "$1" ]] && {
@@ -61,7 +64,7 @@ req1() {
 load_module() {
   local module=${1}
   local module_file=$ZSHAI_MODULES_DIR/enabled/$1.sh
-  [[ ! -f ${module_file} ]] && echo ${module_file} not found
+  [[ ! -f ${module_file} ]] && echo "${module_file} not found"
 }
 
 load_modules() {
@@ -105,13 +108,13 @@ disable_module() {
   local module=${1}
   local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
   local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
-  [[ ! -e ${module_file_target} ]] && echo ${module_file_target} not found || \
-  rm ${module_file_target}
+  [[ ! -e ${module_file_target} ]] && echo "${module_file_target} not found "  \
+  ||  rm ${module_file_target}
 }
 
 # list the available/enabled modules
 list_modules() {
-  [[ -z ${1} ]] && 'ls' $ZSHAI_MODULES_DIR/available \
+  [[ -z "$1" ]] && 'ls' $ZSHAI_MODULES_DIR/available \
   || 'ls' $ZSHAI_MODULES_DIR/enabled
 }
 

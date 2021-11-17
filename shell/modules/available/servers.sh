@@ -17,8 +17,10 @@ servers() {
       ;;
     *)
       server="$(cat ${serverlist} | fzf)"
-      echo "Connecting to: $server"
-      ssh "$server"
+
+      [[ ! -z $server ]] \
+      && echo "Connecting to: $server" \
+      && ssh "$server"
     esac;
 
   }

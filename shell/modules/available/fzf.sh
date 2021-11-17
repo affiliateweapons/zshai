@@ -5,7 +5,7 @@ fzp() {
   FZF_DEFAULT_OPTS='--preview="f={}; [[ -f $f ]] && fold -w 120 -s  {} " --preview-window=top,20 --height 100%' 
 }
 
-fzf_preview() {
+fzv() {
 
   input=$(cat /dev/stdin)
 
@@ -15,4 +15,9 @@ fzf_preview() {
     echo "No results";
   }
 
+}
+
+
+fzfind() {
+find | grep $1 | fzf --preview="cat {}"
 }

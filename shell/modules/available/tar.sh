@@ -25,10 +25,18 @@ tarc() {
   sudo tar czvf $archive.tar.gz $target
 }
 
+
+
 tarx() {
   req1 $1 && return
-
   tar zxvf $1
+}
+
+
+tarcf() {
+  req1 $1 && return
+
+  tar zxvf $1.tar.gz $1
 }
 
 targit() {
