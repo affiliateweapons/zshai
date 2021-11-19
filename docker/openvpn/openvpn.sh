@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-install_openvpn() {
+server_install() {
   OVPN_SERVER="ghost.eternal.sh"
   vared -p  "Open VPN server domain:  "  -e OVPN_SERVER
   [[ ! -z $OVPN_SERVER ]] && {
@@ -13,31 +13,42 @@ install_openvpn() {
 
 generate_cert() {
   local CLIENT="${1:-home}"
-  docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full $CLIENT nopass
+  docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full $CLIENT
   docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient $CLIENT > $CLIENT.ovpn
   install_openvpn $CLIENT
 }
 
 install_cert() {
-  local CLIENT="${1:-home}"
+  local OVPN_CLIENT="${1:-home}"
   sudo apt-get install openvpn
-  sudo install -o root -m 400 $CLIENT.ovpn /etc/openvpn/$CLIENT.conf
+  sudo install -o root -m 400 $OVPN_CLIENT.ovpn /etc/openvpn/$OVPN_CLIENT.conf
   sudo /etc/init.d/openvpn restart
 }
 
-handshake() {
+local_handshake() {
+  echo "LOCAL: handshake"
   docker run -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
 }
 
-OVPN_DATA="ovpn-data"
-vared -p  "Choose data folder:  " -e OVPN_DATA
 
-[[ -e $OVPN_DATA ]] && {
-  echo "$OVPN_DATA not empty"
-  return
-} || {
-  install_openvpn \
-  && handshake \
-  && generate_cert \
-  && install_cert
+
+[[ -z $1 ]] && {
+  OVPN_DATA="ovpn-data"
+  vared -p  "Choose data folder:  " -e OVPN_DATA
+
+  [[ -e $OVPN_DATA ]] && {
+    echo "$OVPN_DATA not empty"
+    return
+  } || {
+    server_install
+  }
+} && {
+  OVPN_CLIENT="home"
+  vared -p  "Choose data folder:  " -e OVPN_CLIENT
+
+  local_handshake \
+  && generate_cert $OVPN_CLIENT \
+  && install_cert $$OVPN_CLIENT
 }
+
+
