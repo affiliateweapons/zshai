@@ -30,19 +30,19 @@ local_handshake() {
 }
 
 
-  echo "GENERATING SERVER CERTIFICATE"
-  OVPN_DATA="ovpn-data"
-  vared -p  "Choose data folder:  " -e OVPN_DATA
-  server_install $OVPN_DATA
+## START HERE
+echo "GENERATING SERVER CERTIFICATE"
+OVPN_DATA="ovpn-data"
+vared -p  "Choose data folder:  " -e OVPN_DATA
+server_install $OVPN_DATA
 
-  
-  echo "GENERATING CLIENT CERTIFICATE"
-  OVPN_CLIENT="home"
-  vared -p  "Choose data folder:  " -e OVPN_CLIENT
 
-  local_handshake \
-  && generate_cert $OVPN_CLIENT \
-  && install_cert $$OVPN_CLIENT
-}
+echo "GENERATING CLIENT CERTIFICATE"
+OVPN_CLIENT="home"
+vared -p  "Choose data folder:  " -e OVPN_CLIENT
+
+local_handshake \
+&& generate_cert $OVPN_CLIENT \
+&& install_cert $$OVPN_CLIENT
 
 
