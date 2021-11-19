@@ -1,0 +1,1 @@
+alias rmr="rm -R"

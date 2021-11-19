@@ -12,3 +12,8 @@ syslist() {
   #cat /tmp/systemctl.out
 }
 sysres="sudo systemctl restart"
+
+
+sysf() {
+  systemctl list-unit-files --type=service  | grep $1
+}

@@ -57,3 +57,13 @@ targit() {
 
 # list files in a .tar.gz archive
 alias tarl="tar -tvf"
+
+# just acrhive, dont compress
+tarchive() {
+  tar -cf $1.tar  $1
+}
+
+# and then restore with this
+tarchive_x() {
+  tar -xf $1 -C /
+}

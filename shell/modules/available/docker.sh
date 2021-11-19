@@ -1,5 +1,6 @@
 # docker aliaes anad functions
 # docker
+alias dh='docker history --format="{{.CreatedBy}}" --no-trunc'
 alias docker="sudo docker"
 alias docker-compose="sudo docker-compose"
 alias dcb="docker-compose build"
@@ -30,7 +31,6 @@ alias dcd="docker-compose down"
 # docker cd
 alias dv="cd /var/lib/docker/volumes/"
 alias dk="cd ~/docker"
-
 # docker exec
 alias alpine="dx alpine sh"
 alias dubu="dx ubuntu sh"
@@ -90,3 +90,5 @@ dockerzsh() {
 dockersh() {
   docker exec -it $1 sh
 }
+alias dbsh="dockerbash"
+alias dzsh="dockerzsh"

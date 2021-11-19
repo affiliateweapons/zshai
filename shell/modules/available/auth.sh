@@ -11,3 +11,7 @@ ipgrep() {
   local text=$(cat /dev/stdin)
   echo $text | grep -E $1 "([0-9]{1,3}\.){3}[0-9]{1,3}\b" 
 }
+
+ipattemps() {
+  auth_ips | ipgrep -o | sort | uniq -c | sort -hr
+}
