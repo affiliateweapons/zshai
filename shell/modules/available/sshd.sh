@@ -1,6 +1,12 @@
 # short cut to change default ssh port to 689
 sshsec() {
   local NEW_SSH_PORT=689
+
+  [[ ! -f /etc/resolv.conf ]] && {
+    echo "ERROR: no /etc/resolv.conf file found. Aborting."
+    return
+  }
+  
   eval $(cat /etc/*release);
   [[ $NAME != "Ubuntu" ]] && echo "Only Ubuntu supported" && return
 
@@ -9,8 +15,6 @@ sshsec() {
   [[ $confirm != "y" ]] && return
 
   echo "Open port $NEW_SSH_PORT"
-  setup_ufw
-
   echo "Changing SSH port to $NEW_SSH_PORT"
   cp /etc/ssh/sshd_config /etc/ssh/sshd_config.old
   echo > /etc/ssh/sshd_config
@@ -27,4 +31,7 @@ sshsec() {
   sudo systemctl restart sshd
   echo "Confirm that SSH is listening to port 689"
   nsl | grep sshd 
+
+
+
 }
