@@ -28,3 +28,20 @@ eelogs() {
     find /var/lib/docker/volumes/*_log_*/_data -type f | \
     fzf --preview="tac {}" --preview-window=top,70%
 }
+
+cdconfig() {
+  local sites=$(ee_sites)
+  echo $sites
+}
+
+eeconfig() {
+  find /var/lib/docker/volumes/*_config_*/_data -type f | \
+  fzf --preview="tac {}" --preview-window=top,70%
+}
+
+ee_profile() {
+  local sites=$(ee_sites)
+  choice=$(echo $sites | fzf)
+
+  echo $choice
+}
