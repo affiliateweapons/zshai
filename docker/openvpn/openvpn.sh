@@ -13,8 +13,8 @@ server_install() {
 
 generate_cert() {
   local CLIENT="${1:-home}"
-  docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full $CLIENT
-  docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient $CLIENT > $CLIENT.ovpn
+  sudo docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn easyrsa build-client-full $CLIENT
+  sudo docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient $CLIENT > $CLIENT.ovpn
 }
 
 install_cert() {
@@ -30,18 +30,12 @@ local_handshake() {
 }
 
 
-echo "GENERATING SERVER CERTIFICATE"
-[[ -z $1 ]] && {
+  echo "GENERATING SERVER CERTIFICATE"
   OVPN_DATA="ovpn-data"
   vared -p  "Choose data folder:  " -e OVPN_DATA
+  server_install $OVPN_DATA
 
-  [[ -e $OVPN_DATA ]] && {
-    echo "$OVPN_DATA not empty"
-    return
-  } || {
-    server_install
-  }
-} || {
+  
   echo "GENERATING CLIENT CERTIFICATE"
   OVPN_CLIENT="home"
   vared -p  "Choose data folder:  " -e OVPN_CLIENT
