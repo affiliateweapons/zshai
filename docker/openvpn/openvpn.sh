@@ -41,7 +41,7 @@ echo "GENERATING SERVER CERTIFICATE"
   } || {
     server_install
   }
-} && {
+} || {
   echo "GENERATING CLIENT CERTIFICATE"
   OVPN_CLIENT="home"
   vared -p  "Choose data folder:  " -e OVPN_CLIENT
