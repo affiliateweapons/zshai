@@ -1,10 +1,14 @@
-OVPN_DATA="ovpn-data"
+#!/usr/bin/env zsh
 
 install_openvpn() {
-  docker volume create --name $OVPN_DATA
-  docker run --name $OVPN_DATA -v /etc/openvpn busybox
-  docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_genconfig -u udp://ghost.eternal.sh:1194
-  docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn ovpn_initpki
+  OVPN_SERVER="ghost.eternal.sh"
+  vared -p  "Open VPN server domain:  "  -e OVPN_SERVER
+  [[ ! -z $OVPN_SERVER ]] && {
+    docker volume create --name $OVPN_DATA
+    docker run --name $OVPN_DATA -v /etc/openvpn busybox
+    docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_genconfig -u udp://$OVPN_SERVER:1194
+    docker run --volumes-from $OVPN_DATA --rm -it kylemanna/openvpn ovpn_initpki
+  }
 }
 
 generate_cert() {
@@ -13,7 +17,6 @@ generate_cert() {
   docker run --volumes-from $OVPN_DATA --rm kylemanna/openvpn ovpn_getclient $CLIENT > $CLIENT.ovpn
   install_openvpn $CLIENT
 }
-
 
 install_cert() {
   local CLIENT="${1:-home}"
@@ -26,16 +29,13 @@ handshake() {
   docker run -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
 }
 
-
-vared -p  "Choose data folder:  "  -e OVPN_DATA
+OVPN_DATA="ovpn-data"
+vared -p  "Choose data folder:  " -e OVPN_DATA
 
 [[ -e $OVPN_DATA ]] && {
   echo "$OVPN_DATA not empty"
   return
 } || {
-  OVPN_SERVER="ghost.eternal.sh"
-  vared -p  "Open VPN server domain:  "  -e OVPN_SERVER
-
   install_openvpn \
   && handshake \
   && generate_cert \
