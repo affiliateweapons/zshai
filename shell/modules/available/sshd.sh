@@ -20,7 +20,7 @@ sshsec() {
     echo 'Include /etc/ssh/sshd_config.d/*.conf' > /etc/ssh/sshd_config
   }
 
-  cat  $ZSHAI/skel/etc/ssh/sshd_config >> /etc/ssh/sshd_config
+  cat  $ZSHAI/lib/skel/etc/ssh/sshd_config >> /etc/ssh/sshd_config
 
   echo "Restarting SSH daemon"
   ufw enable
