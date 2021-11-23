@@ -6,9 +6,9 @@ echo $env
 core_tools=( git zsh net-tools xclip )
 
 linuxdistro() {
-  [[ ! -z "$(fgrep centos /etc/os-release)" ]] && echo "centos"
-  [[ ! -z "$(fgrep ubuntu /etc/os-release)" ]] && echo "ubuntu"
-  [[ ! -z "$(fgrep debian /etc/os-release)" ]] && echo "debian"
+  [[ ! -z "$(fgrep centos /etc/os-release)" ]] && echo "centos" && return
+  [[ ! -z "$(fgrep ubuntu /etc/os-release)" ]] && echo "ubuntu" && return
+  [[ ! -z "$(fgrep debian /etc/os-release)" ]] && echo "debian" && return
 }
 
 # check if distro is Ubuntu or CentOs
