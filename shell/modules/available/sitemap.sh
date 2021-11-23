@@ -18,6 +18,19 @@ cachegen() {
 
 }
 
+xmlurls() {
+  touch urls.list
+
+  urls="$(
+  for i in $('ls' *.xml); do
+    cat  $i |  grep -Eo "(http|https)://[a-zA-Z0-9./?=_%:-]*" |  \
+    grep -v "//.*sitemaps\|w3\|google" | sort
+  done
+  )";
+
+  echo "$urls"  | tee cache.index
+}
+
 build_cache() {
   local cachedir=$PWD/cache
   mkdir -p $cachedir
