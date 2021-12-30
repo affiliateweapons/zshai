@@ -1,5 +1,5 @@
 cdf() {
-
+  local f=$1
   [[ -f $1 ]] && {
     cd ${f//${f:t}}
   } || {
@@ -13,3 +13,14 @@ cdf() {
   }
 
 }
+
+
+function md() {
+    mkdir -p "$@" && cd "$@"
+}
+last_cd() {
+  PWD_SKIP_ONCE=true
+  [[ -f "$ZSHAI_DATA/pwd" ]] && cd $(cat "$ZSHAI_DATA/pwd")
+}
+alias lcd="last_cd"
+
