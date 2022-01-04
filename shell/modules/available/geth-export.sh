@@ -35,16 +35,31 @@ export_blocks() {
 
 
 gex() {
-  GETH_DATADIR="$(geth_get_datadir)"
-  local script="$1"
+  GETH_DATADIR="${GETH_DATADIR:-$(geth_get_datadir)}"
+  local instance="${1:-1}"
+  local script="$2"
+  local instances=( $(cat $ZSHAI_DATA/gth/instances ) )
+#  echo $instances[$instance]
+  GETH_DATA_DIR=$instances[$instance]
+
   [[ -z "$GETH_DATADIR" ]] && echo "no primary datadir configured" && return
 
   [[ -z "$script" ]] && {
-    geth --datadir $GETH_DATADIR --preload /root/geth/js/lib.js attach
+    geth \
+    --datadir $GETH_DATADIR \
+    --jspath /root/geth/js \
+    --preload lib.js,contracts.js \
+    attach
   } || {
-    geth --datadir $GETH_DATADIR --preload /root/geth/js/lib.js attach --exec "$script"
+    geth \
+    --datadir $GETH_DATADIR \
+    --jspath /root/geth/js \
+    --preload lib.js \
+    attach \
+    --exec "$script"
   }
 }
+
 
 geth_get_datadir() {
   [[ -f "$ZSHAI_DATA/gth/current-datadir" ]]&& {
