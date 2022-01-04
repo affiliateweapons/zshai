@@ -4,7 +4,7 @@ export ZSHAI_MODULES_AVAILABLE="$ZSHAI_MODULES_DIR/available"
 alias h="cd /home/$USER"
 alias zdr="cd $ZSHAI_DATA;ls"
 alias restart="source $ZSHAI/init.sh"
-
+alias zs="cd ~/zshai;ls"
 # hosts
 alias ehf="sudo nano /etc/hosts"
 alias edh="sudo nano /etc/hosts"
@@ -17,7 +17,7 @@ alias ea="nano $ZSHAI/core.sh;source $ZSHAI/core.sh"
 alias ezc="nano ~/.zshrc;source ~/.zshrc"
 
 # grep
-alias gr="grep --color=auto"
+alias gr="grep --color=auto --exlude-dir='/opt/containerd*/' --exclud-dir='*.git*' "
 alias fgr="fgrep --color=auto"
 alias egr="egrep --color=auto"
 
@@ -32,6 +32,9 @@ function td() {
   cd $1
 }
 
+restore-ifs() {
+  IFS=$'\n'
+}
 
 # we use an alias function so that we can 
 # capture the aliases for later use when you want to disable certain aliases
@@ -42,9 +45,13 @@ zshai_alias() {
 
 zshai_log() {
   local type="$1"
-  local message=$(cat /dev/stdinput)
+#  local message="$(cat /dev/stdin)"
+  local message="${2}"
+  echo "Log: $type"
+  echo "Message: $message"
   [[ ! -z "$type" ]] && {
-    logfile="$ZSHAI_DATA/log/$type"
+    local logfile="$ZSHAI_DATA/log/$type"
+    echo "Adding to logfile: $logfile"
     [[ ! -e $logfile ]] && { 
       touch $logfile
       echo $message >> $ZSHAI_DATA/log/$type
@@ -68,6 +75,7 @@ load_module() {
 }
 
 load_modules() {
+  restore-ifs
   for i in $('ls' $ZSHAI_MODULES_DIR/enabled);source  $ZSHAI_MODULES_DIR/enabled/$i
 }
 
@@ -78,6 +86,7 @@ edit_module() {
   local f="$ZSHAI_MODULES_DIR/available/$1.sh"
   nano "$f"
   [[ -e "$f" ]] && {
+    export LAST_MODULE="$1"
     source  "$f"
     echo $1 enabled
     enable_module $1
@@ -88,6 +97,11 @@ edit_module() {
 
 # alias for edit_module
 alias em="edit_module"
+lm() {
+  local script="$ZSHAI_MODULES_DIR/available/$1.sh"
+
+  [[ -f "$script" ]] && source "$script"
+}
 
 
 # modules are enabled by symlinking from the modules/available folder
@@ -112,6 +126,27 @@ disable_module() {
   ||  rm ${module_file_target}
 }
 
+commit_module() {
+  local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
+  local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
+  [[ ! -f $module_file_source ]] &&  echo "$1 does not exist" && return
+  echo "git diff $module_file_source"
+  cd $ZSHAI;git diff $module_file_source
+  local answer="y"
+  vared -p "Commit $1? [y/n] " -e answer
+  [[ $answer != "y" ]] && return
+  local message="update function $1"
+  vared -p "git commit message:$?  (ctrl-c to abort):  " -e message
+  [[ ! -z $message ]]  && {
+    cmd="git add $module_file_source"
+    echo $cmd;eval $cmd
+    git add $module_file_source && \
+    git add $module_file_target && \
+    git commit -m "$message"
+  } || { echo "Aborted. Nothing was commited" }
+}
+
+alias cm="commit_module"
 # list the available/enabled modules
 list_modules() {
   [[ -z "$1" ]] && 'ls' $ZSHAI_MODULES_DIR/available \
@@ -162,3 +197,5 @@ alias lsr="'ls' --recursive"
 alias lls="l -p --color=auto"
 alias ll="ls"
 alias cl="clear"
+alias lss="ls -lSh"
+alias lsc="ls | wc -l"
