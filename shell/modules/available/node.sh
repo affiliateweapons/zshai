@@ -1,1 +1,1 @@
-alias node="docker run --rm -v src:/app node"
+#alias node="docker run --rm -v src:/app node"
