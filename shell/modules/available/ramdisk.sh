@@ -13,8 +13,15 @@ ramdisk() {
     let size=2048
     size=$(( size=size_gb*1024 ))
     echo "setup ramdisk of:  $size $size_gb MB"
+
+    [[ ! -e "$mount" ]] && {
+      mkdir -p "$mount"
+    } || {
+    echo "There was an error with mounting"
     sudo mount -t tmpfs -o size="$size"M  "$disk_name"  "$mount"
+    }
   }
+
   $CLS::speedtest() {
     local target="/mnt/ramdisk/zero"
     sudo dd if=/dev/zero of="$target" bs=4k count=100000
