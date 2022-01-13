@@ -10,16 +10,17 @@ ramdisk() {
     shift
     local size_gb="${1:-2}"
     local mount="/mnt/ramdisk"
+    local disk_name="ramdisk"
     let size=2048
     size=$(( size=size_gb*1024 ))
-    echo "setup ramdisk of:  $size $size_gb MB"
+    echo "setup ramdisk of:  $size m"
 
     [[ ! -e "$mount" ]] && {
       mkdir -p "$mount"
-    } || {
-    echo "There was an error with mounting"
-    sudo mount -t tmpfs -o size="$size"M  "$disk_name"  "$mount"
+      echo "created folder: $mount"
     }
+
+    sudo mount -t tmpfs -o size="$size"m  "$disk_name"  "$mount"   
   }
 
   $CLS::speedtest() {
