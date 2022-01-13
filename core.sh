@@ -5,6 +5,7 @@ alias h="cd /home/$USER"
 alias zdr="cd $ZSHAI_DATA;ls"
 alias restart="source $ZSHAI/init.sh"
 alias zs="cd ~/zshai;ls"
+alias zsu="cd ~/zshai;git pull"
 # hosts
 alias ehf="sudo nano /etc/hosts"
 alias edh="sudo nano /etc/hosts"
@@ -15,7 +16,7 @@ alias ea="nano $ZSHAI/core.sh;source $ZSHAI/core.sh"
 
 # edit and source zshrc
 alias ezc="nano ~/.zshrc;source ~/.zshrc"
-
+alias ezn="nano ~/.zshenv;source ~/.zshenv"
 # grep
 alias gr="grep --color=auto --exlude-dir='/opt/containerd*/' --exclud-dir='*.git*' "
 alias fgr="fgrep --color=auto"
@@ -81,15 +82,18 @@ load_modules() {
 
 # edit-module
 edit_module() {
-  [[ -z "$1" ]] && echo  "Usage: edit_module [module]" && return
+  local module="$1"
+  [[ -z "$1" ]] && [[ -z "$LAST_MODULE" ]] && echo  "Usage: edit_module [module]" && return
+  [[ -z "$1" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
 
-  local f="$ZSHAI_MODULES_DIR/available/$1.sh"
+  local f="$ZSHAI_MODULES_DIR/available/$module.sh"
   nano "$f"
-  [[ -e "$f" ]] && {
-    export LAST_MODULE="$1"
+
+  [[ -f "$f" ]] && {
+    export LAST_MODULE="$module"
     source  "$f"
-    echo $1 enabled
-    enable_module $1
+    echo "$module" enabled
+    enable_module "$module"
   } || {
     echo "aborted creating $1"
   }
