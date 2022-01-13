@@ -6,7 +6,20 @@ copy_module() {
     cat "$module_path" | xclip
   } || echo "$module doesn't exist"
 }
+rm_module() {
+  local module="$1"
+  local module_path="$ZSHAI/shell/modules/available/$module.sh"
 
+  [[ -f "$module_path" ]] && {
+  local answer
+  vared -p "Delete module $module? y/n" -e answer
+
+    [[ "$answer" = "y" ]] && {
+      rm "$ZSHAI/shell/modules/enabled/$module.sh"
+      rm "$module_path"
+    }
+  }
+}
 
 subcommands() {
   local CLS="$1"
