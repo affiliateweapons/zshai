@@ -5,7 +5,6 @@ export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS"$(cat<<EOF
   --margin 0 \
   --preview-window "right,50%" \
   --header-lines 1 \
-  --with-nth="-1,-2" \
   --preview="print -l {+}" \
   --bind "del:execute^print -l {+}^+abort"
   --bind "tab:select+up,esc:deselect-all"
