@@ -28,17 +28,18 @@ subcommands() {
 
   case $cmd in
   "")
-    [[ $functions[$CLS::default] ]] && $CLS::default \
+    (( $+functions[$CLS::default] )) && $CLS::default \
       || $CLS::list
       return
     ;;
   *)
-    [[ $functions[$CLS::$cmd] ]] && {
+    (( $+functions[$CLS::$cmd] )) && {
       shift
       [[ ! -z "$SUB_VERBOSE" ]] && echo $CLS $cmd
+      shift 
       $CLS::$cmd $@
     } || {
-      [[ $functions[$CLS::default] ]] \
+      (( $+functions[$CLS::default] )) \
       && {shift;$CLS::default $@} \
       || echo "Unknown command: $@"
     }
