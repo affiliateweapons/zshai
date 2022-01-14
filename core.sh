@@ -26,8 +26,6 @@ alias egr="egrep --color=auto"
 # rm
 alias srm="sudo rm -R"
 
-# filesystem
-alias ds="sudo du -h -d 1"
 function td() {
   mkdir -p $1
   cd $1
@@ -203,3 +201,4 @@ alias ll="ls"
 alias cl="clear"
 alias lss="ls -lSh"
 alias lsc="ls | wc -l"
+
