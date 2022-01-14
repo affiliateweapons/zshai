@@ -24,7 +24,7 @@ EOF
     for i in $list
     do
       (( a++ ))
-      file="${i//[0-9]* }"
+      file="${i//[0-9 ]* }"
       echo  "deleting #$a $RED $file $RESET"
       rm $file
       ls
