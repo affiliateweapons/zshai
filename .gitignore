@@ -1,3 +1,4 @@
 **/pipeline/**
 sandbox/**
 plugins/**/data
+plugins/ext/
