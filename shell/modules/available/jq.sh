@@ -1,10 +1,12 @@
 jqa() {
   local key="$1"
-  local val="$2"
+  local val="\"$2\""
+  local hash="\"$3\""
+  local curdate="$(date +'%y%M%d')"
   [[ '{' = $val[1] ]] &&  [[ '}' = $val[-1] ]] && {
     jq ".$key += $val"
   } || {
-  jq ".$key += {$val: \"$3\"}"
+  jq ".$key += {date: $curdate, hash: $hash, result: $val}"
   }
 }
 
