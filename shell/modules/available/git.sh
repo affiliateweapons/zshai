@@ -1,14 +1,18 @@
 # for fsindex
 alias getc="cd /etc/;sudo git status"
 alias gdiff="cd /etc/;git diff;cd -"
+alias gcom="cd /etc/;sudo git commit"
+alias gadd="cd /etc;sudo git add ."
 
 alias gs="git status"
+alias gic="git clone"
 alias sgs="sudo git status"
 alias gtc="git commit -m"
 alias ga="git add ."
 alias gp="git pull"
 alias sgp="sudo git pull"
 alias gpush="git push"
+alias gpu="git push"
 alias sgit="sudo git"
 alias sginit="sudo git init"
 alias sga="sudo git add ."
@@ -32,10 +36,17 @@ gac() {
 
 
 gitrepos() {
-find * $1 2>/dev/null  | grep .git$  2>/dev/null
+  find * $1 2>/dev/null  | grep .git$  2>/dev/null
 }
 
 
 find_gitclones() {
  history | grep  " git clone http.*github" > git_repos.csv
+}
+
+git_repo_list() {
+  for d in ` command 'find' . -name .git -type d 2>/dev/null`
+  do
+    echo $d
+  done
 }
