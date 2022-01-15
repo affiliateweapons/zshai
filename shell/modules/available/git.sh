@@ -50,3 +50,12 @@ git_repo_list() {
     echo $d
   done
 }
+
+zle -N .git-pull
+# ALT + DOWN
+bindkey "^[[1;3B" .git-pull
+function .git-pull() {
+
+  git pull
+
+}
