@@ -33,7 +33,7 @@ ds() {
     }
 
     [[ ! -z "$DS_FORCE" ]] && echo "Cache busting active"
-    local result=$(sudo du -h -d 1 | sort -h)
+    local result=$(sudo du * -h -d 0 | sort -h)
     local dir="$(pwd)"
     [[ ! -z "$DS_VERBOSE" ]] && {
       echo "current folder: $dir"
