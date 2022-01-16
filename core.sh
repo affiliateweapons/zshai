@@ -76,22 +76,29 @@ load_module() {
 load_modules() {
   restore-ifs
   for i in $('ls' $ZSHAI_MODULES_DIR/enabled);source  $ZSHAI_MODULES_DIR/enabled/$i
+  for i in $('ls' $ZSHAI_MODULES_DIR/private);source  $ZSHAI_MODULES_DIR/private/$i
+
 }
 
 # edit-module
 edit_module() {
   local module="$1"
+  export type="${2:-available}"
+
   [[ -z "$1" ]] && [[ -z "$LAST_MODULE" ]] && echo  "Usage: edit_module [module]" && return
   [[ -z "$1" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
 
-  local f="$ZSHAI_MODULES_DIR/available/$module.sh"
+  local f="$ZSHAI_MODULES_DIR/$type/$module.sh"
   nano "$f"
 
   [[ -f "$f" ]] && {
     export LAST_MODULE="$module"
     source  "$f"
-    echo "$module" enabled
-    enable_module "$module"
+
+    [[ ! "$type" = "private" ]] && {
+      echo "$module" enabled
+      enable_module "$module" "$type"
+    }
   } || {
     echo "aborted creating $1"
   }
@@ -108,13 +115,14 @@ lm() {
 
 # modules are enabled by symlinking from the modules/available folder
 enable_module() {
-  local module=${1}
-  local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
-  local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
-
-  [[ ! -e ${module_file_source} ]] && echo ${module_file_source} "not found" || {
-    [[ -e ${module_file_target} ]] && return
-    ln -s ../available/$1.sh ${module_file_target}
+  local module="${1}"
+  local type="$2"
+  local module_file_source="$ZSHAI_MODULES_DIR/available/$1.sh"
+  local module_file_target="$ZSHAI_MODULES_DIR/enabled/$1.sh"
+  
+  [[ ! -e "${module_file_source}" ]] && echo "${module_file_source}" "not found" || {
+    [[ -e "${module_file_target}" ]] && return
+    ln -s "../$type/$1.sh ${module_file_target}"
     echo "$1 module enabled"
   }
 }
@@ -129,8 +137,12 @@ disable_module() {
 }
 
 commit_module() {
+
   local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
   local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
+  local opts="$2"
+  [[ "$opts" = "-p" ]] && echo "push after=true" && push_after="true" 
+
   [[ ! -f $module_file_source ]] &&  echo "$1 does not exist" && return
   echo "git diff $module_file_source"
   cd $ZSHAI;git diff $module_file_source
@@ -138,17 +150,21 @@ commit_module() {
   vared -p "Commit $1? [y/n] " -e answer
   [[ $answer != "y" ]] && return
   local message="update function $1"
-  vared -p "git commit message:$?  (ctrl-c to abort):  " -e message
+  vared -p "git commit message: $1 ?  (ctrl-c to abort):  " -e message
   [[ ! -z $message ]]  && {
     cmd="git add $module_file_source"
     echo $cmd;eval $cmd
-    git add $module_file_source && \
-    git add $module_file_target && \
+    git add $module_file_source 
     git commit -m "$message"
-  } || { echo "Aborted. Nothing was commited" }
+  } || { echo "Aborted. Nothing was d" }
+
+
+    [[ ! -z "$push_after" ]] && git push
+#    git add $module_file_target && \
 }
 
 alias cm="commit_module"
+
 # list the available/enabled modules
 list_modules() {
   [[ -z "$1" ]] && 'ls' $ZSHAI_MODULES_DIR/available \
@@ -188,17 +204,4 @@ alias ep="nano ~/.zshai/creds/.passwords"
 alias x="exit"
 
 
-
-# ls
-alias lsh="'ls' --help"
-alias l="'ls' -1"
-alias l="ls"
-alias lsn="'ls' -1"
-alias ls="'ls' -lsAtrhp --color=auto --group-directories-first"
-alias lsr="'ls' --recursive"
-alias lls="l -p --color=auto"
-alias ll="ls"
-alias cl="clear"
-alias lss="ls -lSh"
-alias lsc="ls | wc -l"
 
