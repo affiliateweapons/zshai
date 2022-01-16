@@ -5,12 +5,12 @@ ramdisk() {
   ramdisk::list() {
     ramdisk::default
   }
-  $CLS::default() {
+
+  ramdisk::default() {
     cd "$mount_folder"
     mount | grep ram
     ls
   }
-
 
   ramdisk::help() {
     echo $(cat<<EOF
@@ -33,9 +33,6 @@ EOF
     local disk_name="ramdisk"
     let size="$(( ramsize * 1024 ))"
     echo "setup ramdisk of:  $size m"
-
-
-    
     vared -p "Mount folder: " -e mountfolder
     [[ ! -e "$mountfolder" ]] && {
       sudo mkdir -p "$mountfolder"
@@ -47,6 +44,17 @@ EOF
   ramdisk::speedtest() {
     local target="/mnt/ramdisk/zero"
     sudo dd if=/dev/zero of="$target" bs=4k count=100000
+  }
+
+  ramdisk::persist() {
+    local source="/mnt/ramdisk/"
+    local target="/mnt/disks/eth/ramdisk-persistance/"
+    vared -p "RAM disk source folder to persist: " -e source
+    vared -p "Target folder: " -e target
+
+    [[ -d "$target" ]] && {
+      rsync -av $source $target
+    } || echo "$target is not a folder"
   }
 
   subcommands $CLS $@
