@@ -11,7 +11,17 @@ didep() {
   done | sort -u
   
 }
+docker_stop() {
+  systemctl {stop,mask} docker.socket
+  systemctl {stop,disable,mask} docker.service
+  systemctl {stop,disable,mask} containerd.service
+  systemctl {stop,disable,mask} docker.{socket,service}
+}
+docker_enable() {
+systemctl enable docker{.socket,.service}
+systemctl start docker{.socket,.service}
 
+}
 # docker aliaes anad functions
 rlc() {
   for i in  $(docker  ps -qn $i ); drm $i  
