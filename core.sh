@@ -1,4 +1,5 @@
-# core aliases and functions
+# core aliases and functions\
+echo "ZSHAI=$ZSHAI"
 export ZSHAI_MODULES_DIR="$ZSHAI/shell/modules"
 export ZSHAI_MODULES_AVAILABLE="$ZSHAI_MODULES_DIR/available"
 alias h="cd /home/$USER"
@@ -82,9 +83,10 @@ load_modules() {
 
 # edit-module
 edit_module() {
+#  echo "param ="$ZSHAI_MODULES_DIR
+#  return
   local module="$1"
   export type="${2:-available}"
-
   [[ -z "$1" ]] && [[ -z "$LAST_MODULE" ]] && echo  "Usage: edit_module [module]" && return
   [[ -z "$1" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
 
@@ -93,6 +95,7 @@ edit_module() {
 
   [[ -f "$f" ]] && {
     export LAST_MODULE="$module"
+    echo "$f"
     source  "$f"
 
     [[ ! "$type" = "private" ]] && {
@@ -117,12 +120,14 @@ lm() {
 enable_module() {
   local module="${1}"
   local type="$2"
-  local module_file_source="$ZSHAI_MODULES_DIR/available/$1.sh"
+  local module_file_source="$ZSHAI_MODULES_DIR/$type/$1.sh"
   local module_file_target="$ZSHAI_MODULES_DIR/enabled/$1.sh"
-  
+
   [[ ! -e "${module_file_source}" ]] && echo "${module_file_source}" "not found" || {
     [[ -e "${module_file_target}" ]] && return
-    ln -s "../$type/$1.sh ${module_file_target}"
+
+    ln -s "${module_file_source}" "${module_file_target}"
+    echo "Creating symbolic link ${module_file_source} ${module_file_target}"
     echo "$1 module enabled"
   }
 }
@@ -133,7 +138,7 @@ disable_module() {
   local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
   local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
   [[ ! -e ${module_file_target} ]] && echo "${module_file_target} not found "  \
-  ||  rm ${module_file_target}
+  ||  rm ${module_file_target} && echo "symbolic link removed: ${module_file_target}"
 }
 
 commit_module() {
