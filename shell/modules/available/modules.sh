@@ -1,3 +1,11 @@
+
+edit_private_module() {
+
+}
+
+alias epm="edit_private_module"
+
+
 copy_module() {
   local module="$1"
   local module_path="$ZSHAI/shell/modules/available/$module.sh"
@@ -18,7 +26,7 @@ rm_module() {
       rm "$ZSHAI/shell/modules/enabled/$module.sh"
       rm "$module_path"
     }
-  }
+  } || echo "No module given"
 }
 
 subcommands() {
@@ -27,6 +35,9 @@ subcommands() {
   [[ -z "$CLS" ]] && echo "no CLS defined" && return
 
   case $cmd in
+  e)
+      edit_module $CLS
+      return ;;
   "")
     (( $+functions[$CLS::default] )) && $CLS::default \
       || $CLS::list
@@ -45,4 +56,18 @@ subcommands() {
     }
     ;;
   esac
+}
+
+fzf_modules() {
+
+  export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS"$(cat<<EOF
+      --preview "batc -l zsh--color=always $ZSHAI_MODULES_DIR/available/{}"
+EOF
+)
+  list_modules | fzf
+
+}
+
+verbose_log() {
+  echo $@ > /tmp/verbose.log
 }
