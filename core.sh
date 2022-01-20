@@ -1,5 +1,5 @@
 # core aliases and functions\
-echo "ZSHAI=$ZSHAI"
+#echo "ZSHAI=$ZSHAI"
 export ZSHAI_MODULES_DIR="$ZSHAI/shell/modules"
 export ZSHAI_MODULES_AVAILABLE="$ZSHAI_MODULES_DIR/available"
 alias h="cd /home/$USER"
@@ -40,13 +40,18 @@ restore-ifs() {
 # capture the aliases for later use when you want to disable certain aliases
 zshai_alias() {
   alias "$1"
-  [[ ! -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] && echo "Setting alias: $1" | zshai_log aliases
+  [[ ! -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] &&  zshai_log aliases "Setting alias: $1"
 }
 
 zshai_log() {
+
+  [[ -z "$ZSHAI_DEBUG_LOG_ALIAS_SETUP" ]] && return
   local type="$1"
 #  local message="$(cat /dev/stdin)"
   local message="${2}"
+  is_interactive=$(printenv IT)
+  [[  -z is_interactive ]] && return
+  echo "funcfiletrace: $funcfiletrace"
   echo "Log: $type"
   echo "Message: $message"
   [[ ! -z "$type" ]] && {
@@ -69,16 +74,24 @@ req1() {
 
 # modules
 load_module() {
-  local module=${1}
-  local module_file=$ZSHAI_MODULES_DIR/enabled/$1.sh
-  [[ ! -f ${module_file} ]] && echo "${module_file} not found"
+  local module="${1}"
+  local module_file="$ZSHAI_MODULES_DIR/enabled/$1.sh"
+  [[ ! -f "${module_file}" ]] && echo "${module_file} not found"
 }
 
 load_modules() {
   restore-ifs
-  for i in $('ls' $ZSHAI_MODULES_DIR/enabled);source  $ZSHAI_MODULES_DIR/enabled/$i
-  for i in $('ls' $ZSHAI_MODULES_DIR/private);source  $ZSHAI_MODULES_DIR/private/$i
-
+  local c=( enabled private );
+  for i in $c
+  do
+    local d="$ZSHAI_MODULES_DIR/$i"
+    [[ -d "$d" ]] && {
+      for i in $('ls' "$d")
+      do
+        source "$d/$i"
+      done
+    }
+  done
 }
 
 # edit-module
@@ -91,7 +104,7 @@ edit_module() {
   [[ -z "$1" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
 
   local f="$ZSHAI_MODULES_DIR/$type/$module.sh"
-  nano "$f"
+  $commands[nano] "$f"
 
   [[ -f "$f" ]] && {
     export LAST_MODULE="$module"
@@ -99,7 +112,7 @@ edit_module() {
     source  "$f"
 
     [[ ! "$type" = "private" ]] && {
-      echo "$module" enabled
+      echo "✔️  module $module  [enabled]"
       enable_module "$module" "$type"
     }
   } || {
@@ -110,9 +123,11 @@ edit_module() {
 # alias for edit_module
 alias em="edit_module"
 lm() {
+  clear
   local script="$ZSHAI_MODULES_DIR/available/$1.sh"
 
   [[ -f "$script" ]] && source "$script"
+  $1
 }
 
 
