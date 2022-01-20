@@ -11,7 +11,9 @@ find() {
     [by_extension]="find files by extension"
     )
     export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS"$(cat<<EOF
-    --prompt "$(pwd) ➤"
+    --header "$(pwd)"
+    --height 100
+    --prompt " ➤"
     --delimiter :
     --with-nth 2
     --bind "enter:execute^echo {1};$INIT {1}^+abort"
@@ -45,19 +47,31 @@ EOF
 
   #find by file extension
   $CLS::by_extension() {
-    find * ! -path "**/.git" ! -path "**/**/.git"   -type f -ls | grep .$1$
+#    command find * ! -path "**/.git" ! -path "**/**/.git"   -type f -ls | grep .$1$
+    echo "$(for i in $(fd) ;do;echo ${i:e} ;done)" | sortCount
   }
 
   # find with ls output
   $CLS::ls() {
     local query="$1"
     local opts="$2"
-    (( $# )) && shift
-    local opts=$@
-    [[ -z $2 ]] && command find * | grep $query \
-      || command find *  $opts | grep $query
+#    echo $opts
+#    echo $query
+#    echo $query;return
+#    (( $# )) && shift
+#    local opts=$@
+ #   echo $opts
+    [[ -z "$query" ]] && {
+      echo "No  query given. Finding all files"
+      echo "--"
+      command find *
+    } || {
+      echo "query=$query"
+      echo "opts=$opts"
+      eval "command find *  $opts" | command grep $query
+    }
   }
-  alias fls="find_ls"
+  alias fls="find ls"
 
 
   # find files that contain text $1
@@ -70,22 +84,27 @@ EOF
   }
 
   $CLS::dir() {
-    shift
-    export TITLE="find dir matching [text]"
-    local results=$(command find *   -type d \
-  ! -path "**/node_modules/**" \
-  ! -path "**/**/.git"  \
-  ! -path  "**/.git/**" \
-  2>/dev/null  | grep $1)
+#    [[ ! -z "$1" ]] &&  shift
+    local query="${1:-.}"
+    export TITLE="find dir matching [$1]"
+    local find_dir_cmd='command find *   -type d \
+    ! -path "**/node_modules/**" \
+    ! -path "**/**/.git"  \
+    ! -path "**/**/.*"  \
+    ! -path  "**/.git/**" \
+    2>/dev/null  | grep '"$query"
+    local results=$(eval $find_dir_cmd)
+
     [[ ! -z $results ]] && {
       unset select
       FZF_DEFAULT_OPTS="$FZF_THEME_OPTS --header '$TITLE'"
-      local select=$(echo $results | fzf --preview="ls -lsAtrh --color=auto {}")
+      local select=$(echo $results | fzf --preview="command ls -lsAtrh --group-directories-first --color=always {}")
       [[ ! -z "$select" ]] && {
-#        echo "$select"
-        #cd "$select"
+        cd "$select"
+        find dir "."
       }
-
+    } || {
+      echo "no results"
     }
     return
   }
