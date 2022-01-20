@@ -6,7 +6,7 @@ alias h="cd /home/$USER"
 alias zdr="cd $ZSHAI_DATA;ls"
 alias restart="source $ZSHAI/init.sh"
 alias zs="cd ~/zshai;ls"
-alias zsu="cd ~/zshai;git pull"
+alias zsu="cd ~/zshai;git pull;restart"
 # hosts
 alias ehf="sudo nano /etc/hosts"
 alias edh="sudo nano /etc/hosts"
