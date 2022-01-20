@@ -1,6 +1,6 @@
 # for fsindex
 alias getc="cd /etc/;sudo git status"
-alias gic="git checkout"
+alias gco="git checkout"
 alias gdiff="cd /etc/;git diff;cd -"
 alias gcom="cd /etc/;sudo git commit"
 alias gadd="cd /etc;sudo git add ."
