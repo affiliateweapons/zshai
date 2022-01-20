@@ -57,6 +57,17 @@ EOF
     } || echo "$target is not a folder"
   }
 
+  ramdisk::restore() {
+    local target="/mnt/ramdisk/"
+    local source="/mnt/disks/eth/ramdisk-persistance/"
+    vared -p "RAM disk restore from: " -e source
+    vared -p "Target folder: " -e target
+
+    [[ ! -d "$target" ]] && echo "$target is not a folder" || {
+      rsync -av $source $target
+    }
+  }
+
   subcommands $CLS $@
 
 }
