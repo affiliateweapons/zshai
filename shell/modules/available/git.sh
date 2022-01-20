@@ -1,10 +1,11 @@
 # for fsindex
 alias getc="cd /etc/;sudo git status"
+alias gic="git checkout"
 alias gdiff="cd /etc/;git diff;cd -"
 alias gcom="cd /etc/;sudo git commit"
 alias gadd="cd /etc;sudo git add ."
 
-alias gs="git status"
+alias gs="git status --column=auto"
 alias gic="git clone"
 alias sgs="sudo git status"
 alias gtc="git commit -m"
@@ -55,7 +56,31 @@ zle -N .git-pull
 # ALT + DOWN
 bindkey "^[[1;3B" .git-pull
 function .git-pull() {
+  [[ -d ".git" ]] && {
+    git pull
+  } || {
+    echo "no git directory"
+  }
+	emulate -L zsh
+	printf '%s' ${terminfo[smkx]}
 
-  git pull
+}
 
+function .git-push() {
+  [[ -d ".git" ]] && {
+    git push
+  } || {
+    echo "no git directory"
+  }
+  zle-end
+}
+zle -N .git-push
+# ALT + UP
+bindkey "^[[1;3B" .git-push
+
+
+
+
+gitignore() {
+  [[ -f ".gitignore" ]] && nano ".gitignore"
 }
