@@ -1,4 +1,11 @@
+shell/autoload/
+shell/plugins/
+plugins/ext/
 **/pipeline/**
 sandbox/**
 plugins/**/data
-plugins/ext/
+dev
+dev-plugins
+shell/modules/private/
+shell/modules/enabled
+shell/modules/crypto
