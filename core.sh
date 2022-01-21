@@ -123,11 +123,11 @@ edit_module() {
 # alias for edit_module
 alias em="edit_module"
 lm() {
+  local type="${2:-available}"
   clear
-  local script="$ZSHAI_MODULES_DIR/available/$1.sh"
-
+  local script="$ZSHAI_MODULES_DIR/$type/$1.sh"
   [[ -f "$script" ]] && source "$script"
-  $1
+  [[ -z "$3" ]] && $1
 }
 
 
@@ -139,7 +139,7 @@ enable_module() {
   local module_file_target="$ZSHAI_MODULES_DIR/enabled/$1.sh"
 
   [[ ! -e "${module_file_source}" ]] && echo "${module_file_source}" "not found" || {
-    [[ -e "${module_file_target}" ]] && return
+    [[ -f "${module_file_target}" ]] && return
 
     ln -s "${module_file_source}" "${module_file_target}"
     echo "Creating symbolic link ${module_file_source} ${module_file_target}"
