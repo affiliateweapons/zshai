@@ -1,0 +1,27 @@
+
+{name}() {
+  CLS="{name}"
+  ORIGINAL_FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"
+  export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS$(cat<<EOF
+
+EOF
+)"
+
+
+  $CLS::list() {
+  }
+
+  $CLS::default() {
+  }
+
+  $CLS::usage() {
+  }
+
+
+  $CLS::alias() {
+  }
+
+  subcommands $CLS $@
+
+  FZF_DEFAULT_OPTS="$ORIGINAL_FZF_DEFAULT_OPTS"
+}
