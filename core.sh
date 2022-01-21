@@ -18,6 +18,8 @@ alias ea="nano $ZSHAI/core.sh;source $ZSHAI/core.sh"
 # edit and source zshrc
 alias ezc="nano ~/.zshrc;source ~/.zshrc"
 alias ezn="nano ~/.zshenv;source ~/.zshenv"
+alias eze="nano ~/.zshenv;source ~/.zshenv"
+
 # grep
 alias gr="grep --color=auto --exlude-dir='/opt/containerd*/' --exclud-dir='*.git*' "
 alias fgr="fgrep --color=auto"
