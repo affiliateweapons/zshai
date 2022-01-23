@@ -210,9 +210,6 @@ alias ehc="sudo nano /etc/ssh/ssh_config.d/empire.conf"
 # ssh
 alias sk="cat ~/.ssh/id_rsa.pub | xclip"
 
-# source a script file
-alias src="source"
-
 # cllipboard
 alias xclip="xclip -selection c"
 
@@ -226,4 +223,5 @@ alias ep="nano ~/.zshai/creds/.passwords"
 alias x="exit"
 
 
-
+# directory traversing
+for i in `seq 10`;-$i(){a="${funcstack//*-}";b=$(printf ':h%.0s' {1..$a});eval $(eval echo "$\{\$\(pwd\)$b\}")} 
