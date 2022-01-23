@@ -24,3 +24,5 @@ last_cd() {
 }
 alias lcd="last_cd"
 
+
+for i in `seq 10`;-$i(){a="${funcstack//*-}";b=$(printf ':h%.0s' {1..$a});eval $(eval echo "$\{\$\(pwd\)$b\}")} 
