@@ -1,3 +1,6 @@
+sortcount() {
+  cat /dev/stdin |  sort | uniq -c | sort -h
+}
 # sort a file from a to z
 sortaz() {
   OUT="$(mktemp)"
