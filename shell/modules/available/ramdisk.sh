@@ -54,7 +54,7 @@ EOF
 
     [[ ! -d "$target" ]] && {
       local answer
-      vared -p "Create folder?: " -e ANSWER
+      vared -p "Create folder?: " -e answer
     }
 
     [[ $answer != "y" ]] && echo "aborted" || {
