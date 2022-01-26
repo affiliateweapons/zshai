@@ -52,9 +52,16 @@ EOF
     vared -p "RAM disk source folder to persist: " -e source
     vared -p "Target folder: " -e target
 
-    [[ -d "$target" ]] && {
-      rsync -av $source $target
-    } || echo "$target is not a folder"
+    [[ ! -d "$target" ]] && {
+      local answer
+      vared -p "Create folder?: " -e ANSWER
+    }
+
+    [[ $answer != "y" ]] && echo "aborted" || {
+      mkdir -p "$target" \
+      && rsync -av $source $target
+    }
+
   }
 
   ramdisk::restore() {
