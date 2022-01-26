@@ -58,12 +58,11 @@ EOF
     }
 
     [[ $answer != "y" ]] && echo "aborted" || {
-      mkdir -p "$target" \
-      && rsync -av $source $target
+      mkdir -p "$target"
     } || {
-    return
+      rsync -av $source $target || return
     }
-
+    return
   }
 
   ramdisk::restore() {
