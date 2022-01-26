@@ -55,14 +55,26 @@ EOF
     [[ ! -d "$target" ]] && {
       local answer
       vared -p "Create folder?: " -e answer
+
+      [[ "$answer" != "y" ]] && echo "aborted"
+
+      [[ "$answer" = "y" ]] && {
+        mkdir -p "$target"
+      }
     }
 
-    [[ $answer != "y" ]] && echo "aborted" || {
-      mkdir -p "$target"
+    [[ -d "$target" ]] && {
+      $CLS::_sync $source $target || return
     } || {
-      rsync -av $source $target || return
+      echo "Could not persist ramdisk"
     }
+
     return
+  }
+  ramdisk::_sync() {
+    local source="$1"
+    local target="$2"
+    rsync -av $source $target
   }
 
   ramdisk::restore() {
