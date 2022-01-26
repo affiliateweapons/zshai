@@ -60,6 +60,8 @@ EOF
     [[ $answer != "y" ]] && echo "aborted" || {
       mkdir -p "$target" \
       && rsync -av $source $target
+    } || {
+    return
     }
 
   }
