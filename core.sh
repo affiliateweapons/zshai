@@ -1,7 +1,30 @@
+white=15
+# blue
+color1=12
+info_text=$white
+info_subject=$color1
+warn_text=$white
+warn_subject=$color1
+prompt-info() {
+  print -P "%F{white}$1:%B%F{green} $2%b%f%k"
+}
+:info() {
+  local text="$1";shift
+  local subject="$@"
+  print -P "%F{info-text}$text:%B%F{info-subject} $subject%b%f%k"
+}
+:warn() {
+  local text="$1";shift
+  local subject="$@"
+  print -P "%F{warn_text}$text:%B%F{warn_subject} $subject%b%f%k"
+}
 # core aliases and functions\
 #echo "ZSHAI=$ZSHAI"
 export ZSHAI_MODULES_DIR="$ZSHAI/shell/modules"
 export ZSHAI_MODULES_AVAILABLE="$ZSHAI_MODULES_DIR/available"
+: ${ZSHAI_CORE_DIR:=$ZSHAI_PLUGINS_DIR/zshai-core}
+: ${ZSHAI_DEFAULT_CONFIG_FILE:=$ZSHAI_STORAGE_DIR/default_config}
+: ${ZSHAI_STORAGE_DIR:=$ZSHAI_USER_HOME/.zshai}
 alias h="cd /home/$USER"
 alias zdr="cd $ZSHAI_DATA;ls"
 alias restart="source $ZSHAI/init.sh"
@@ -29,7 +52,7 @@ alias egr="egrep --color=auto"
 # rm
 alias srm="sudo rm -R"
 
-function td() {
+function tkd() {
   mkdir -p $1
   cd $1
 }
@@ -41,8 +64,10 @@ restore-ifs() {
 # we use an alias function so that we can 
 # capture the aliases for later use when you want to disable certain aliases
 zshai_alias() {
-  alias "$1"
-  [[ ! -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] &&  zshai_log aliases "Setting alias: $1"
+#print -l $functrace
+#print -R "$@"
+ eval  "alias $1"
+  #[[ ! -z $ZSHAI_DEBUG_LOG_ALIAS_SETUP ]] &&  zshai_log aliases "Setting alias: $(print -l $functrace)"
 }
 
 zshai_log() {
@@ -78,12 +103,13 @@ req1() {
 load_module() {
   local module="${1}"
   local module_file="$ZSHAI_MODULES_DIR/enabled/$1.sh"
+
   [[ ! -f "${module_file}" ]] && echo "${module_file} not found"
 }
 
 load_modules() {
   restore-ifs
-  local c=( enabled private );
+  local c=( core enabled private );
   for i in $c
   do
     local d="$ZSHAI_MODULES_DIR/$i"
@@ -96,40 +122,96 @@ load_modules() {
   done
 }
 
+last-value() {
+  local type="$1"
+  local value="$2"
+  local last_file="$ZSHAI_DATA/last/$type"
+
+  # add to history
+  local history_dir="$ZSHAI_DATA/list/history/$type"
+  local history_file="$history_dir/$type"
+  [[ ! -d "$history_dir" ]] && {
+    mkdir -p "$history_dir"
+    touch "$history_dir/$type"
+    echo $history_dir
+  }
+  [[ ! -z "$type" ]] && [[ ! -z "$value" ]] && echo "$value" >> "$history_dir/$type"
+
+
+  [[ ! -z "$value" ]] && {
+  echo "$value" > "$last_file"
+  echo "$value"
+  } || {
+    [[ -f "$last_file"  ]] && cat "$last_file" || touch "$last_file"
+  }
+  [[ -z $1 ]] && {
+    for i in $('ls' -1 "$last_file")
+    do
+      echo "$i = $(cat $last_file/$i)"
+    done
+  }
+}
+zshai_alias 'lv="last-value"'
 # edit-module
 edit_module() {
-#  echo "param ="$ZSHAI_MODULES_DIR
-#  return
-  local module="$1"
-  export type="${2:-available}"
-  [[ -z "$1" ]] && [[ -z "$LAST_MODULE" ]] && echo  "Usage: edit_module [module]" && return
-  [[ -z "$1" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
+  module="$1"
+  LAST_MODULE="$(last-value module)"
+  [[ "$module" =~ '[0-9]' ]] && module="${$(fzf-top-modules list | head -$module | tail -n -1)/* }"
+  prompt-info "Most accesed module" "$module"
+  local module="${module:-$LAST_MODULE}"
+
+  export type="${2:-${LAST_MODULE_TYPE:-available}}"
+
+  [[ -z "$module" ]] && [[ -z "$LAST_MODULE" ]] && echo  "Usage: edit_module [module]" && return
+  [[ -z "$module" ]] && [[ ! -z "$LAST_MODULE" ]] && echo "$LAST_MODULE" && module="$LAST_MODULE"
+
+  # if given relative path as single parameter
+  [[ -f "$module" ]] && {
+    local m="${module//$ZSHAI_MODULES_DIR\/}"
+    module="${${m:t}//.$m:e}"
+    type="${m:h2}"
+#    f="$module"
+  }
+  prompt-info "Loading module" "$module"
+  prompt-info "Module type" "$type"
 
   local f="$ZSHAI_MODULES_DIR/$type/$module.sh"
+
   $commands[nano] "$f"
 
   [[ -f "$f" ]] && {
-    export LAST_MODULE="$module"
-    echo "$f"
+    export LAST_MODULE="$(last-value module ${module})"
+    export LAST_MODULE_TYPE="$(last-value module-type ${type})"
     source  "$f"
 
     [[ ! "$type" = "private" ]] && {
-      echo "✔️  module $module  [enabled]"
+      prompt-info  "module enabled" "$module ✔️ "
       enable_module "$module" "$type"
     }
   } || {
-    echo "aborted creating $1"
+    echo "aborted creating $module"
   }
 }
 
 # alias for edit_module
 alias em="edit_module"
 lm() {
+  LAST_MODULE="$(last-value module)"
   local type="${2:-available}"
-  clear
-  local script="$ZSHAI_MODULES_DIR/$type/$1.sh"
-  [[ -f "$script" ]] && source "$script"
-  [[ -z "$3" ]] && $1
+  local module="${1:-$LAST_MODULE}"
+  local module_file="$ZSHAI_MODULES_DIR/$type/$module.sh"
+  local module_file2="$ZSHAI_MODULES_DIR/$type/zshai-$module.sh"
+  [[ $module = "core" ]] && module_file="$ZSHAI/core.sh"
+  [[ -z "$MODULE_LOAD_NO_CLEAR" ]] && clear
+  [[ -f "$module_file" ]] && {
+    echo "Loading module: $module_file" && source "$module_file" && export LAST_MODULE="$module"
+  }
+
+# || [[ -f "$module_file2" ]] && {
+#    echo "Loading module: $module_file2" && source "$module_file2" && export LAST_MODULE="zshai-$module"
+#    module="zshai-$module"
+#  }
+  [[ -z "$3" ]] && echo "Executing module: $module"
 }
 
 
@@ -224,4 +306,10 @@ alias x="exit"
 
 
 # directory traversing
-for i in `seq 10`;-$i(){a="${funcstack//*-}";b=$(printf ':h%.0s' {1..$a});eval $(eval echo "$\{\$\(pwd\)$b\}")} 
+for i in `seq 10`;-$i(){a="${funcstack//*-}";b=$(printf ':h%.0s' {1..$a});eval $(eval echo "$\{\$\(pwd\)$b\}")}
+
+export CLRALW="--color=always"
+
+
+
+alias pf="printf"
