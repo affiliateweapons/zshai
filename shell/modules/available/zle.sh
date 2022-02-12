@@ -1,3 +1,4 @@
+
 fzf_zle() {
 
 
@@ -16,5 +17,31 @@ zle-end() {
 }
 
 TRAPWINCH() {
-  zle && { zle reset-prompt; zle -R }
+  zle && {zle -R ; zle reset-prompt}
+}
+
+
+buffer_region() {
+  BUFFER="true word2 word3";
+  region_highlight=( "0 4 fg=196" );
+}
+
+
+zle-test() {
+echo "ZLE TEST"
+echo "$ZLE_CMD"
+
+eval $ZLE_CMD
+unset ZLE_CMD
+}
+zle -N zle-test
+bindkey '^[T' zle-test
+
+
+zshai-redraw-prompt() {
+  local precmd
+  for precmd in $precmd_functions; do
+    $precmd
+  done
+  zle reset-prompt
 }
