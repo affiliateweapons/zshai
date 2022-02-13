@@ -119,7 +119,10 @@ decrypt() {
       cmd=$1
       shift
       $CLS::$cmd $@
-    } || $CLS::decrypt $@ || echo "Unknown command: $1"
+      return
+    } || {
+      $CLS::decrypt $@
+    }
     ;;
   esac
 
