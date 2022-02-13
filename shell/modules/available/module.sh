@@ -1,3 +1,11 @@
+:dir() {
+  local basedir="$ZSHAI_DATA/$CLS"
+  local dir="$basedir/$1"
+  [[ ! -d "$dir" ]] && mkdir -p "$dir"
+  echo $dir
+}
+
+
 module() {
   CLS="module"
   $CLS::list() {
@@ -14,7 +22,7 @@ module() {
   }
 
   $CLS::fzf() {
-    echo $($CLS::list)
+    echo "$($CLS::list-modules)"
   }
   $CLS::find_alias() {
     [[ -z "$1" ]] || [[ "$1" = '*' ]] && {
@@ -44,3 +52,4 @@ module() {
   subcommands $CLS $@
 }
 alias mfa="module find_alias"
+alias rmm="rm_module"
