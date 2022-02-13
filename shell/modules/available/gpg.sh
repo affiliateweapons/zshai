@@ -1,13 +1,18 @@
 export GPG_SERVER=keyserver.gnukey.net
 
-[[ -d $ZSHAI_DATA/gpg ]] && {
-  export GPG_NAME=$(cat $ZSHAI_DATA/gpg/name)
-  export GPG_EMAIL=$(cat $ZSHAI_DATA/gpg/email)
+[[ -d "$ZSHAI_DATA/gpg" ]] && [[ -f "$ZSHAI_DATA/gpg/name" ]] && {
+  export GPG_NAME=$(cat "$ZSHAI_DATA/gpg/name")
+  export GPG_EMAIL=$(cat "$ZSHAI_DATA/gpg/email")
 }
 
-alias gpgg="gpg --gen-key"
-alias gpggf="gpg --full-generate-key"
-alias gpl="gpg --list-secret-keys"
+enable_gpg_aliases() {
+  alias gpgg="gpg --gen-key"
+  alias gpggf="gpg --full-generate-key"
+  alias gpl="gpg --list-secret-keys"
+  alias gpss="gpg --send-keys $GPG_SERVER"
+  alias gpe="gpg_encrypt"
+  alias gpd="gpg_decrypt"
+}
 
 # display GPG email
 gpg_email() {
@@ -19,8 +24,9 @@ gpg_export() {
   gpg --output $GPG_NAME.gpg --export $GPG_EMAIL
 }
 
-# send GPG public key to server
-alias gpss="gpg --send-keys $GPG_SERVER"
+gpg_dir() {
+  cd $ZSHAI_DATA/gpg
+}
 
 # GPG encrypt file/folder
 gpg_encrypt() {
@@ -39,16 +45,15 @@ gpg_encrypt() {
 
 # GPG decrypt file
 gpg_decrypt() {
-
+  [[ -f "$ZSHAI_DATA/encrypt/$1.gpg" ]] && {
+    gpg --output $1.gpg --decrypt
+  } || \
   [[ -f $1.sig ]] && gpg --output $1.sig --decrypt || {
-    [[ -f $1 ]] && gpg --output $1 --decrypt $1.sig
+    [[ -f $1 ]] && gpg --output $1 --decrypt $1.sig | xclip -selection c
   } || {
     echo "could not find $1"
   }
 }
-
-alias gpe="gpg_encrypt"
-alias gpd="gpg_decrypt"
 
 # GPG sign
 gps() {
@@ -57,7 +62,9 @@ gps() {
   cat $1.asc
 }
 
-
+gpg_list_unencrypted() {
+  'ls' "$ZSHAI_DATA/secrets/" | grep -v gpg
+}
 
 encrypt() {
   [[ ! -f $1 ]] && nano
@@ -66,17 +73,49 @@ encrypt() {
 }
 
 decrypt() {
-  [[ -f $1 ]] && file=$1 || {
-    [[ -f $1.gpg ]] && file=$1.gpg || echo "file not found $1" && return
+  local CLS="decrypt"
+  local INIT="source ~/.zshrc;source $ZSHAI_MODULES_DIR/available/gpg.sh;$CLS"
+
+  $CLS::decrypt() {
+    [[ -f $ZSHAI_DATA/secrets/$1.gpg ]] && file=$ZSHAI_DATA/secrets/$1.gpg || {
+      [[ -f $1 ]] && file=$1 || {
+        [[ -f $1.gpg ]] && file=$1.gpg || echo "file not found $1" && return
+      }
+    }
+
+    [[ ! -z $2 ]] && {
+      gpg $file
+    } || {
+      TXT=$(gpg --decrypt $file 2>/dev/null)
+      echo $TXT | xclip
+      echo $TXT
+      sleep 1;
+      pkill xclip
+    }
+
+  }
+
+  $CLS::list() {
+    'ls' -1 $ZSHAI_DATA/secrets/
+  }
+
+  $CLS::cleanUp() {
+    tput cnorm
+    unset FZF_DEFAULT_OPTS
   }
 
 
-  [[ ! -z $2 ]] && {
-    gpg $file
-  } || {
-    TXT=$(gpg --decrypt $file 2>/dev/null)
-    echo $TXT
-  }
+  case $1 in
+  "")
+    $CLS::list
+    ;;
+  *)
+    [[ $functions[$CLS::$1] ]] && {
+      cmd=$1
+      shift
+      $CLS::$cmd $@
+    } || $CLS::decrypt $@ || echo "Unknown command: $1"
+    ;;
+  esac
+
 }
-alias dcr="decrypt"
-alias enc="encrypt"
