@@ -5,7 +5,6 @@
   echo $dir
 }
 
-
 module() {
   CLS="module"
   $CLS::list() {
