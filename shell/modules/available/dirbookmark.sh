@@ -2,14 +2,24 @@ dirbookmark() {
   CLS="dirbookmark"
   LIST_BASE="$ZSHAI_DATA/list"
   LIST_TYPE="bookmarks"
-  LIST_CURRENT="$(cat $LIST_BASE/$LIST_TYPE/.current)"
+  LIST_CURRENT="$LIST_BASE/$LIST_TYPE/.current"
+  [[ ! -f "$LIST_CURRENT" ]] && {
+    mkdir -p "$LIST_TYPE"
+    echo "default" >  "$LIST_CURRENT"
+    :info "created initial .current file in" "$LIST_CURRENT"
+  }
+
   LIST="$LIST_TYPE/$LIST_CURRENT"
+  LIST_FILE="$LIST_BASE/$LIST"
 #  LIST_DIR="$LIST_BASE/$LIST_TYPE/$LIST_CURRENT"
 #--bind "alt-1:execute^echo {1}^+abort"
   ORIGINAL_FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"
   export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS$(cat<<EOF
 EOF
 )"
+  $CLS::list() {
+    [[ -f "$LIST_FILE" ]] && cat $LIST_FILE | nl
+  }
 
   $CLS::add() {
     echo "Choose slot 1-9"
@@ -99,11 +109,17 @@ EOF
     vared -p "$line" dir
     [[ ! -z "$dir" ]] &&  list append "$dir" $LIST || { echo "aborting" ;break }
   }
-
+  $CLS::_aliases() {
+    alias dbm="dirbookmark"
+    unfunction $CLS::_aliases
+  }
+  
   subcommands $CLS $@
-
 }
 
+(){
+  dirbookmark _aliases
+}
 zle-output-prompt() {
   local widget_output="$1"
 #  (( LN_PREFIX )) && whiterows $LN_PREFIX
