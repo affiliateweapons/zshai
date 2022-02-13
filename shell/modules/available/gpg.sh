@@ -16,7 +16,8 @@ enable_gpg_aliases() {
 
 # display GPG email
 gpg_email() {
-  cat ~/.zshai/gpg/email
+  local f="$HOME/.zshai/gpg/email"
+  [[ -f "$f" ]] && cat "$f"
 }
 
 # export GPG public key to file
@@ -25,17 +26,17 @@ gpg_export() {
 }
 
 gpg_dir() {
-  cd $ZSHAI_DATA/gpg
+  cd "$ZSHAI_DATA/gpg"
 }
 
 # GPG encrypt file/folder
 gpg_encrypt() {
 
-  [[ ! -e $PWD/$1 ]] && echo "Target $PWD/$1 does not exist" && return
+  [[ ! -e "$PWD/$1" ]] && echo "Target $PWD/$1 does not exist" && return
 
   #if  target is a folder, tar it first
-  [[ -d $1 ]] && {
-    tarc $1
+  [[ -d "$1" ]] && {
+    tarc "$1"
     gpg --output $1.sig --sign $1.tar.gz
   } || {
     gpg --output $1.sig --sign $1
@@ -49,7 +50,9 @@ gpg_decrypt() {
     gpg --output $1.gpg --decrypt
   } || \
   [[ -f $1.sig ]] && gpg --output $1.sig --decrypt || {
-    [[ -f $1 ]] && gpg --output $1 --decrypt $1.sig | xclip -selection c
+    [[ -f $1 ]] && gpg --output $1 --decrypt $1.sig | { 
+      [[ ! -z "$DISPLAY" ]] && xclip -selection c
+    }
   } || {
     echo "could not find $1"
   }
@@ -87,10 +90,12 @@ decrypt() {
       gpg $file
     } || {
       TXT=$(gpg --decrypt $file 2>/dev/null)
-      echo $TXT | xclip
+      [[ ! -z "$DISPLAY" ]] && {
+        echo $TXT | xclip 2>/dev/null
+      }
       echo $TXT
       sleep 1;
-      pkill xclip
+      [[ ! -z "$DISPLAY" ]] && pkill xclip 2>/dev/null
     }
 
   }
