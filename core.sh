@@ -125,6 +125,7 @@ load_modules() {
 last-value() {
   local type="$1"
   local value="$2"
+  [[ -d "$ZSHAI_DATA/last" ]] && mkdir -p "$ZSHAI_DATA/last"
   local last_file="$ZSHAI_DATA/last/$type"
 
   # add to history
@@ -241,7 +242,6 @@ disable_module() {
 }
 
 commit_module() {
-
   local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
   local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
   local opts="$2"
@@ -261,7 +261,6 @@ commit_module() {
     git add $module_file_source 
     git commit -m "$message"
   } || { echo "Aborted. Nothing was d" }
-
 
     [[ ! -z "$push_after" ]] && git push
 #    git add $module_file_target && \
@@ -285,7 +284,6 @@ alias dmo="disable_module"
 # this loads all enabled modules in  $HOME/zshai/modules/enabled
 load_modules
 
-
 # server empire
 alias ehc="sudo nano /etc/ssh/ssh_config.d/empire.conf"
 
@@ -304,12 +302,9 @@ alias ep="nano ~/.zshai/creds/.passwords"
 # exit
 alias x="exit"
 
-
 # directory traversing
 for i in `seq 10`;-$i(){a="${funcstack//*-}";b=$(printf ':h%.0s' {1..$a});eval $(eval echo "$\{\$\(pwd\)$b\}")}
 
 export CLRALW="--color=always"
-
-
 
 alias pf="printf"
