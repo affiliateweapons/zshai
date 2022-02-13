@@ -1,4 +1,3 @@
-
 fzf_bindkey() {
   export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS$(cat <<EOF
   --query="'"
@@ -19,12 +18,7 @@ EOF
 }
 
 new_bindkey() {
-local skel="$(cat<<EOF
-zle -N .function-name
-zshai_bindkey '^[u' .functiona-name
-EOF
-)"
-  echo $skel
+  new widget
 }
 
 zshai_bindkey() {
@@ -38,7 +32,6 @@ zshai_bindkey() {
   bindkey $1 $2
 }
 alias bk="fzf_bindkey"
-
 
 find_bindkey() {
   # [[ $ZSH_VERSION ]] && read  -krE 
@@ -60,7 +53,7 @@ find_bindkey() {
 
   :info "REPLY | hex = " $(cat /tmp/key.txt)
   :info "REPLY  = " $(cat /tmp/reply.txt)
-  
+
 }
 zle -N find_bindkey
 zshai_bindkey '^[^K' find_bindkey
@@ -89,10 +82,7 @@ read_bindkey() {
   [[ $ZSH_VERSION ]] && read  -krE 
      print '\n'
   )"
-
-  #printf '%q' $(echo $(echo $key | base64) | base64 -d)
   echo "$key" > test2\
-  #other method
 }
 sed_readkey() {
   local keycode=$(sed -n l)
@@ -109,19 +99,12 @@ sed_readkey() {
   }
 }
 
-#zle -N  .backward-delete-char-clear-screen
-#bindkey '^[H' .backward-delete-char-clear-screen
-#bindkey $CTRL_ALT'H' clear-screen
-
 zshai-bindkey-show-code() {
  LBUFFER="showkey -a"
  zle .accept-line
  return 0
 }
 
-.bindkey() {
-builtins 'bindkey'
-}
 bindkey_list() {
   bindkey | column -x
 }
