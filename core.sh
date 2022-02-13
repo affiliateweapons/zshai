@@ -125,7 +125,7 @@ load_modules() {
 last-value() {
   local type="$1"
   local value="$2"
-  [[ -d "$ZSHAI_DATA/last" ]] && mkdir -p "$ZSHAI_DATA/last"
+  [[ ! -d "$ZSHAI_DATA/last" ]] && mkdir -p "$ZSHAI_DATA/last"
   local last_file="$ZSHAI_DATA/last/$type"
 
   # add to history
