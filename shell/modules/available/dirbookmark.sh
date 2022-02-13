@@ -6,6 +6,7 @@ dirbookmark() {
   [[ ! -f "$LIST_CURRENT" ]] && {
     mkdir -p "$LIST_TYPE"
     echo "default" >  "$LIST_CURRENT"
+    touch "$LIST_TYPE/default"
     :info "created initial .current file in" "$LIST_CURRENT"
   }
 
