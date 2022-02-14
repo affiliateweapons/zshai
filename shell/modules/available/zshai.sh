@@ -1,4 +1,5 @@
 alias zd="cd $ZSHAI_DATA;ls"
-alias zs="cd $ZSHAI;ls"
 alias zenv="printenv | grep ZSHAI | sort"
-alias typezshai="typeset | grep ZSHAI | sort"
+alias zst="typeset | grep ZSHAI | sort"
+alias zsm="cd $ZSHAI_MODULES_DIR"
+alias zsc="cd $ZSHAI/shell/completion"
