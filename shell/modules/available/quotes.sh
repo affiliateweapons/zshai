@@ -36,3 +36,7 @@ strings() {
 
   _strings::$method
 }
+
+quote() {
+  grep -E '"(.*)"' -o | sed 's/"//g'
+}
