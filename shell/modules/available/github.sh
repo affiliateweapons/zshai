@@ -43,11 +43,15 @@ user_repos() {
 
   case view in
     *)
-      echo $response | grep "]\.svn_url" | quotes  
+      echo $response | grep "]\.svn_url" | quote
     ;;
   esac
 
 
+}
+
+clone_user_repos() {
+  user_repos $1 | multi_clone
 }
 
 multi_clone() {
@@ -107,7 +111,7 @@ user_repos() {
 
   case view in
     *)
-      echo $response | grep "]\.svn_url" | quotes  
+      echo $response | grep "]\.svn_url" | quote
     ;;
   esac
 
