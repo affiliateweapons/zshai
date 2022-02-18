@@ -1,0 +1,5 @@
+zle -N .zshai-{name}
+for i in `seq 9`
+do
+  zshai_bindkey "{prefix}^[$i" .zshai-{name}
+done

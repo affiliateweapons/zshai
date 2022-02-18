@@ -12,30 +12,10 @@ EOF
   }
 
   $CLS::default() {
+  
   }
 
-  $CLS::usage() {
-  }
-
-  $CLS::widgets() {
-  }
-
-  $CLS::options() {
-  }
-
-  $CLS::arguments() {
-  }
-
-  $CLS::bindkeys() {
-  }
-
-  $CLS::alias() {
-  }
-
-  $CLS::config() {
-  }
-
-  $CLS::_cleanup() {
+  $CLS::cleanup() {
     FZF_DEFAULT_OPTS="$ORIGINAL_FZF_DEFAULT_OPTS"
   }
 

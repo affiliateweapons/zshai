@@ -1,0 +1,13 @@
+.zshai-{name} () {
+  [[ -z $BUFFER ]] && {
+    echo " no buffer - keys=$KEYS"
+  } || {
+    LBUFFER="$LBUFFER$KEYS"
+    RBUFFER="$RBUFFER"
+  }
+  
+  zshai-zle accept-line
+}
+
+zle -N .zshai-{name}
+bindkey "{prefix}{key}" .zshai-{name}
