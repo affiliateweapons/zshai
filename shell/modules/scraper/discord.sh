@@ -19,6 +19,11 @@ scraper-discord() {
     python "$script"
   }
 
+  $CLS::on() {
+    local name="${1:-venv}"
+    source "$name"/bin/activate
+  }
+
   $CLS::off(){
     deactivate
   }
