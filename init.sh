@@ -7,6 +7,38 @@ typeset -Ag ZSHAI_DIRS=()
 typeset -ag enabled=()
 
 
+enable_colors() {
+setup_colors() {
+  typeset -g RESET="\u001b[0m"
+  typeset -a colors=(
+    BLACK
+    RED
+    GREEN
+    YELLOW
+    BLUE
+    MAGENTA
+    CYAN
+  )
+
+  for i in {1..7}
+  do
+    (( c=i-1 ))
+    export BB_${colors[$i]}="\u001b[4$c;1m" 
+    export BG_${colors[$i]}="\u001b[4$c""m" 
+    export B_${colors[$i]}="\u001b[3$c;1m" 
+    export ${colors[$i]}="\u001b[3$c""m"
+
+    eval  "B_${colors[$i]}() {"'echo "\u001b[3'$c';1m"$1"'"$RESET"'"}'
+    eval  "_${colors[$i]}() {"'echo "\u001b[3'$c'm"$1"'"$RESET"'"}'
+    eval  "BG_${colors[$i]}() {"'echo "\u001b[4'$c'm"$1"'"$RESET"'"}'
+    eval  "BB_${colors[$i]}() {"'echo "\u001b[4'$c';1m"$1"'"$RESET"'"}'
+  done
+  ZSHAI_ENABLED+=( colors )
+}
+
+(( ! ZSHAI_ENABLED[(I)colors] ))&& setup_colors
+
+}
 zdir() {
   local q="${1:-BASE}"
   ZSHAI_DIRS=(
@@ -23,7 +55,7 @@ zdir() {
 }
 
 enabled=(
-"$(cat $(zdir user)/enabled)"
+"$(d=$(zdir user)/enabled;[[ -f $d ]] && cat $d || touch $d)"
 )
 
 
