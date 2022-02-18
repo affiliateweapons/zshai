@@ -1,1 +1,0 @@
-../available/xmr.sh

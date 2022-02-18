@@ -61,11 +61,11 @@ subcommands() {
         shift
         $CLS::$cmd $@
       } || {
-        (( $+functions[$CLS::default] )) && {
-          [[ ! -z $@ ]] && shift && $CLS::default $@
-        } ||  {
+        (( ! $+functions[$CLS::default] )) && {
           echo "Did you mean: $cmd "
-          ##   fl "$CLS::$cmd" || echo "Unknown command: $@"
+          fl "$CLS::$cmd" || echo "Unknown command: $@"
+        } ||  {
+          [[ ! -z $@ ]] && shift && $CLS::default $@
         }
       }
       ;;

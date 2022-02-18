@@ -1,9 +1,12 @@
 #!/bin/bash
 # usage: ~/zshai/setup.sh
+ZSHAI="$HOME/zshai"
+ZSHAI_DATA="$HOME/.zshai"
+
 env=$(cat .zshai.env)
 echo $env
 
-core_tools=( git zsh net-tools xclip )
+core_tools=( git zsh net-tools nano jq xclip )
 
 linuxdistro() {
   [[ ! -z "$(fgrep centos /etc/os-release)" ]] && echo "centos" && return
@@ -41,11 +44,16 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install
 
 # create zshai local data folders
-[[ ! -e ~/.zshai/servers ]] && {
-  dirs=( servers logs db api list config domains sitemaps )
+[[ ! -e "$ZSHAI_DATA/servers" ]] && {
+  dirs=( servers logs db api list config domains sitemaps gpg secrets plugins last ds )
 
   for i in $dirs; do
-    mkdir -p ~/.zshai/$i
+    mkdir -p "$ZSHAI_DATA/$i"
+  done
+
+  files=( enabled aliases.sh )
+  for i in $files; do
+    touch "$ZSHAI_DATA/$i"
   done
 }
 

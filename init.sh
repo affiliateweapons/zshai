@@ -78,7 +78,7 @@ typeset -g ZSHAI_LOADED_COMPLETIONS=(doctl)
 
 # load plugins
 # first  load the module
-load_module plugins
+#load_module plugins
 plugins load
 
 # mark loaded

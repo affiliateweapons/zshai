@@ -1,23 +1,37 @@
 white=15
 # blue
 color1=12
+color2=5
 info_text=$white
 info_subject=$color1
 warn_text=$white
 warn_subject=$color1
+error_text=$white
+error_subject=$color2
+
 prompt-info() {
   print -P "%F{white}$1:%B%F{green} $2%b%f%k"
 }
 :info() {
-  local text="$1";shift
+  local text="$1";
+  [[ ! -z "$1" ]] && shift
   local subject="$@"
+  [[ $- == *i* ]] && echo "$text $subject" && return
   print -P "%F{info-text}$text:%B%F{info-subject} $subject%b%f%k"
 }
 :warn() {
-  local text="$1";shift
+  local text="$1";
+  [[ ! -z "$1" ]] && shift
   local subject="$@"
   print -P "%F{warn_text}$text:%B%F{warn_subject} $subject%b%f%k"
 }
+:error() {
+  local text="$1";
+  [[ ! -z "$1" ]] && shift
+  local subject="$@"
+  print -P "%F{error_text}$text:%B%F{error_subject} $subject%b%f%k"
+}
+
 # core aliases and functions\
 #echo "ZSHAI=$ZSHAI"
 export ZSHAI_MODULES_DIR="$ZSHAI/shell/modules"
@@ -242,9 +256,10 @@ disable_module() {
 }
 
 commit_module() {
-  local module_file_source=$ZSHAI_MODULES_DIR/available/$1.sh
-  local module_file_target=$ZSHAI_MODULES_DIR/enabled/$1.sh
-  local opts="$2"
+  local module="${1}"
+  local type="${2:-available}"
+  local module_file_source="$ZSHAI_MODULES_DIR/$type/$1.sh"
+  local opts="$3"
   [[ "$opts" = "-p" ]] && echo "push after=true" && push_after="true" 
 
   [[ ! -f $module_file_source ]] &&  echo "$1 does not exist" && return
@@ -261,9 +276,7 @@ commit_module() {
     git add $module_file_source 
     git commit -m "$message"
   } || { echo "Aborted. Nothing was d" }
-
-    [[ ! -z "$push_after" ]] && git push
-#    git add $module_file_target && \
+  [[ ! -z "$push_after" ]] && git push
 }
 
 alias cm="commit_module"
