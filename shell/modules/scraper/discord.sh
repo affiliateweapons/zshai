@@ -16,12 +16,17 @@ scraper-discord() {
 
   $CLS::default() {
     local script="${1:-scraper.py}"
-    python "$script"
+    [[ ! -f "$script" ]] && {
+      [[ -f "venv/bin/activate" ]] && { scrape on && return } || {scrape venv &&  return }
+    } || {
+      python "$script"
+    }
   }
 
   $CLS::on() {
     local name="${1:-venv}"
     source "$name"/bin/activate
+    export LAST_VENV="$(last-value venv $name)"
   }
 
   $CLS::off(){
