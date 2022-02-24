@@ -1,1 +1,0 @@
-../available/functions.sh
