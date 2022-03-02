@@ -42,13 +42,13 @@ setup_colors() {
 zdir() {
   local q="${1:-BASE}"
   ZSHAI_DIRS=(
-    [base]="$ZSHAI"
-    [user]="$ZSHAI_DATA"
-    [shell]="$ZSHAI/shell"
-    [plugins]="$ZSHAI/plugins"
-    [modules]="$ZSHAI/shell/modules"
-    [completion]="$ZSHAI/shell/completion"
-    [alias]="$ZSHAI/shell/alias"
+    base "$ZSHAI"
+    user "$ZSHAI_DATA"
+    shell "$ZSHAI/shell"
+    plugins "$ZSHAI/plugins"
+    modules "$ZSHAI/shell/modules"
+    completion "$ZSHAI/shell/completion"
+    alias "$ZSHAI/shell/alias"
   )
 
   echo "$ZSHAI_DIRS[${q:l}]"
