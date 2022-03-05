@@ -1,7 +1,14 @@
+:new() {
+  local name="${1:-file}"
+  value="${2}"
+  vared -p "New $name: " value
+}
+
 dirbookmark() {
   CLS="dirbookmark"
   LIST_BASE="$ZSHAI_DATA/list"
   LIST_TYPE="bookmarks"
+  LIST_TYPE_BASE="$LIST_BASE/$LIST_TYPE"
   LIST_CURRENT="$LIST_BASE/$LIST_TYPE/.current"
   [[ ! -f "$LIST_CURRENT" ]] && {
     mkdir -p "$LIST_TYPE"
@@ -10,7 +17,7 @@ dirbookmark() {
     :info "created initial .current file in" "$LIST_CURRENT"
   }
 
-  LIST="$LIST_TYPE/$LIST_CURRENT"
+  LIST="$LIST_CURRENT"
   LIST_FILE="$LIST_BASE/$LIST"
 #  LIST_DIR="$LIST_BASE/$LIST_TYPE/$LIST_CURRENT"
 #--bind "alt-1:execute^echo {1}^+abort"
@@ -18,8 +25,44 @@ dirbookmark() {
   export FZF_DEFAULT_OPTS="$FZF_THEME_OPTS$(cat<<EOF
 EOF
 )"
+
+  $CLS::set_current() {
+    :info "current list" "$LIST_CURRENT"
+    :info "set current list to " "$1"
+    echo "$1" > "$LIST_CURRENT"
+
+    cat $LIST_TYPE_BASE/$(cat "$LIST_CURRENT")
+  }
   $CLS::list() {
     [[ -f "$LIST_FILE" ]] && cat $LIST_FILE | nl
+  }
+
+  $CLS::change_list() {
+    cd $LIST_TYPE_BASE
+    local choice="$(ls | fzf --ansi)"
+    [[ -z "$choice" ]] && return
+    :info "your choice is" "$choice"
+    $CLS::set_current "$choice"
+  }
+
+  $CLS::change() {
+    $CLS::change_list $@
+  }
+  zshai_alias 'dbc="$CLS change"'
+
+  $CLS::new() {
+   echo "$LIST_TYPE_BASE"
+   local current=$(cat $LIST)
+   :info "Current bookmark list" "$current"
+    local value
+    :new bookmark
+    [[ -z "$value" ]] && return || {
+      cp  "$LIST_TYPE_BASE/$current" "$LIST_TYPE_BASE/$value"
+      :info "Succesfully cloned to" "$value"
+      echo "$value" > "$LIST_TYPE_BASE/.current"
+      ls
+    }
+    return
   }
 
   $CLS::add() {
@@ -44,8 +87,12 @@ EOF
     nr=${1:-${$(printf '%q'  $KEYS)//*\'}}
     # BUFFER="Replacing slot #$nr"
     # echo $LIST
+   echo "LIST_TYPE=$LIST_TYPE_BASE"
+   local current=$(cat $LIST)
+   :info "Current bookmark list" "$current"
+    list=$(cat $LIST)
     eval $zle_pre
-    BUFFER="list replace $LIST $nr"
+    BUFFER="list replace bookmarks/$list $nr"
     zle accept-line
     eval $zle_post
   }
@@ -55,7 +102,8 @@ EOF
   }
 
   $CLS::default() {
-    echo "default"
+    cd "$LIST_TYPE_BASE"
+    lsa
   }
 
   $CLS::open() {
@@ -103,13 +151,14 @@ EOF
     zle_post="zle accept-line"
   }
 
-  $CLS::new() {
+  $CLS::bindkey() {
     local hotkey="$1"
     local dir="$2"
     line="Bind $CYAN$PWD$RESET to hotkey $CYAN$hotkey$RESET? "
     vared -p "$line" dir
     [[ ! -z "$dir" ]] &&  list append "$dir" $LIST || { echo "aborting" ;break }
   }
+
   $CLS::_aliases() {
     alias dbm="dirbookmark"
     unfunction $CLS::_aliases
